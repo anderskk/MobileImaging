@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -73,6 +74,8 @@ public class ChooseFromGalleryActivity extends Activity {
                         if (!images.contains(photo)) {
                             images.add(photo);
                         }
+                        GridView gridView = (GridView)findViewById(R.id.grid_view_gallery);
+                        gridView.setAdapter(new GridViewAdapter(this.getBaseContext(), images));
 
                     } catch (Exception e) {
                         Log.e("", e.toString());

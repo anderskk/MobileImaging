@@ -35,7 +35,7 @@ public class ShootPanoramaActivity extends Activity {
         Button takePictureButton = (Button) findViewById(R.id.take_picture);
         takePictureButton.setOnClickListener(cameraListener);
 
-        Button createPanorama = (Button) findViewById(R.id.create_panorama);
+        Button createPanorama = (Button) findViewById(R.id.create_panorama_from_camera);
         createPanorama.setOnClickListener(panoramaListener);
 
     }
@@ -88,7 +88,7 @@ public class ShootPanoramaActivity extends Activity {
                 photo = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                 images.add(photo);
 //                imageView.setImageBitmap(photo);
-                GridView gridView = (GridView)findViewById(R.id.grid_view);
+                GridView gridView = (GridView)findViewById(R.id.grid_view_picture);
                 gridView.setAdapter(new GridViewAdapter(this.getBaseContext(), images));
                 Toast.makeText(ShootPanoramaActivity.this, "Number of images: " + images.size(), Toast.LENGTH_LONG).show();
             } catch (Exception e) {
