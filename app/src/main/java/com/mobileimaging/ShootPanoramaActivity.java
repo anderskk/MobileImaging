@@ -66,7 +66,7 @@ public class ShootPanoramaActivity extends Activity {
             if (images.size() > 1) {
                 sendToCropping(v, getBaseContext());
             } else {
-                Toast.makeText(getApplicationContext(), "Need at least 2 images", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Need at least 2 images", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -111,10 +111,9 @@ public class ShootPanoramaActivity extends Activity {
             try {
                 photo = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                 images.add(photo);
-//                imageView.setImageBitmap(photo);
                 GridView gridView = (GridView)findViewById(R.id.grid_view_picture);
                 gridView.setAdapter(new GridViewAdapter(this.getBaseContext(), images));
-                Toast.makeText(ShootPanoramaActivity.this, "Number of images: " + images.size(), Toast.LENGTH_LONG).show();
+                Toast.makeText(ShootPanoramaActivity.this, "Number of images: " + images.size(), Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 Log.e(logtag, e.toString());
                 System.out.println("Entered Exception");

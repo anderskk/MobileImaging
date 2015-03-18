@@ -3,6 +3,7 @@ package com.mobileimaging;
 
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -14,6 +15,9 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,15 +53,35 @@ public class ChooseFromGalleryActivity extends Activity {
         @Override
         public void onClick(View v) {
             if (images.size() > 1) {
-                Bitmap panoramaImage = stitchedImage(images);
-                Intent panoramaIntent = new Intent(ChooseFromGalleryActivity.this, CroppingActivity.class);
-                panoramaIntent.putExtra("panoramaImage", panoramaImage);
-                ChooseFromGalleryActivity.this.startActivity(panoramaIntent);
+                sendToCropping(v, getBaseContext());
             } else {
-                Toast.makeText(getApplicationContext(), "Need at least 2 images", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Need at least 2 images", Toast.LENGTH_SHORT).show();
             }
         }
     };
+
+
+    private void sendToCropping(View v, Context ctx) {
+        FileOutputStream stream;
+        Bitmap panoramaImage = stitchedImage(images);
+        try {
+            String filename = "bitmap.png";
+            stream = ctx.openFileOutput(filename, Context.MODE_PRIVATE);
+
+            panoramaImage.compress(Bitmap.CompressFormat.PNG, 10, stream);
+
+            stream.close();
+            panoramaImage.recycle();
+
+            Intent panoramaIntent = new Intent(ChooseFromGalleryActivity.this, CroppingActivity.class);
+            panoramaIntent.putExtra("panoramaImage", filename);
+            ChooseFromGalleryActivity.this.startActivity(panoramaIntent);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
