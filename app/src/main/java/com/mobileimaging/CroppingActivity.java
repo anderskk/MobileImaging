@@ -2,6 +2,7 @@ package com.mobileimaging;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import com.android.camera.CropImageIntentBuilder;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 public class CroppingActivity extends Activity implements View.OnClickListener {
     private static int REQUEST_PICTURE = 1;
@@ -26,11 +28,20 @@ public class CroppingActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_crop);
+        Bitmap finalImage = null;
+        String filename = getIntent().getStringExtra("panoramaImage");
+        try {
+            FileInputStream is = this.openFileInput(filename);
+            finalImage = BitmapFactory.decodeStream(is);
+            is.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        imageView = (ImageView) findViewById(R.id.stitched_image);
+        imageView.setImageBitmap(finalImage);
 
         button = (Button) findViewById(R.id.button);
         button.setOnClickListener(this);
-
-        imageView = (ImageView) findViewById(R.id.stitched_image);
     }
 
     @Override

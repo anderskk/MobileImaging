@@ -2,6 +2,7 @@ package com.mobileimaging;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -16,6 +17,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,28 +44,13 @@ public class ShootPanoramaActivity extends Activity {
 
     }
 
-    private View.OnClickListener panoramaListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (images.size() > 1) {
-                Bitmap panoramaImage = stitchedImage(images);
-
-
-                Intent panoramaIntent = new Intent(ShootPanoramaActivity.this, CroppingActivity.class);
-                panoramaIntent.putExtra("panoramaImage", panoramaImage);
-            } else {
-                Toast.makeText(getApplicationContext(), "Need at least 2 images", Toast.LENGTH_LONG).show();
-            }
-        }
-    };
-
     private View.OnClickListener cameraListener = new View.OnClickListener() {
         public void onClick(View v) {
             takePhoto(v);
         }
     };
 
-    private void  takePhoto(View view) {
+    private void takePhoto(View view) {
         Date date = new Date();
         String picture_date = date.toString();
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -70,6 +59,41 @@ public class ShootPanoramaActivity extends Activity {
 //        intent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
         startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
+
+    private View.OnClickListener panoramaListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (images.size() > 1) {
+                sendToCropping(v, getBaseContext());
+            } else {
+                Toast.makeText(getApplicationContext(), "Need at least 2 images", Toast.LENGTH_LONG).show();
+            }
+        }
+    };
+
+
+    private void sendToCropping(View v, Context ctx) {
+        FileOutputStream stream;
+        Bitmap panoramaImage = stitchedImage(images);
+        try {
+            String filename = "bitmap.png";
+            stream = ctx.openFileOutput(filename, Context.MODE_PRIVATE);
+
+            panoramaImage.compress(Bitmap.CompressFormat.PNG, 10, stream);
+
+            stream.close();
+            panoramaImage.recycle();
+
+            Intent panoramaIntent = new Intent(ShootPanoramaActivity.this, CroppingActivity.class);
+            panoramaIntent.putExtra("panoramaImage", filename);
+            ShootPanoramaActivity.this.startActivity(panoramaIntent);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
